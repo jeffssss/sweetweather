@@ -27,7 +27,7 @@ public class AlarmManagerUtil {
     		Log.e("weather", "enter alarmmanager repeat function");
             Intent intent =new Intent(ctx, RealtimeWeatherService.class);
             pendingIntent = PendingIntent.getService(ctx, 0, intent, 0);
-            long interval = DateUtils.MINUTE_IN_MILLIS * 30 ;// 30分钟一次 
+            long interval = DateUtils.MINUTE_IN_MILLIS * 5 ;// 5分钟一次 
             long firstWake = System.currentTimeMillis() + 1000;           
             //60秒一个周期，不停的service;
             am.setRepeating(AlarmManager.RTC_WAKEUP, firstWake, interval, pendingIntent);
