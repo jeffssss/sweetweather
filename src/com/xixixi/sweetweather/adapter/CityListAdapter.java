@@ -1,7 +1,10 @@
 package com.xixixi.sweetweather.adapter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.xixixi.sweetweather.R;
-import com.xixixi.sweetweather.util.WeatherSqliteHelper;
+import com.xixixi.sweetweather.util.CitySqliteHelper;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,18 +14,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class HistoryAdapter extends BaseAdapter {
+public class CityListAdapter extends BaseAdapter {
 	
 	private Context context;
 	private LayoutInflater inflater;
 	private Cursor cursor;
-	
-	public HistoryAdapter(Context context, Cursor cursor){
+	public CityListAdapter(Context context, Cursor cursor){
 		this.context = context;
 		this.cursor = cursor;
 		this.inflater = LayoutInflater.from(context);
 	}
-	
 	@Override
 	public int getCount() {
 		return cursor.getCount();
@@ -30,8 +31,11 @@ public class HistoryAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		//TODO: hehe
-		return position;
+		cursor.moveToPosition(position);
+		Map<String,String> map = new HashMap<String,String>();
+		map.put("name", cursor.getString(cursor.getColumnIndex(CitySqliteHelper.COLUMN_NAME)));
+		map.put("num", cursor.getString(cursor.getColumnIndex(CitySqliteHelper.COLUMN_CITY_NUM)));
+		return map;
 	}
 
 	@Override
@@ -46,16 +50,12 @@ public class HistoryAdapter extends BaseAdapter {
 			return null;
 		}
 		if(convertView == null){
-			convertView = inflater.inflate(R.layout.history_list_item, null);
+			convertView = inflater.inflate(R.layout.choose_city_item, null);
 		}
 		cursor.moveToPosition(position);
-		TextView temp = (TextView)convertView.findViewById(R.id.history_temp);
-		TextView datetime = (TextView)convertView.findViewById(R.id.history_datetime);
-		TextView location = (TextView)convertView.findViewById(R.id.history_location);
+		TextView city = (TextView)convertView.findViewById(R.id.city_name);
+		city.setText(cursor.getString(cursor.getColumnIndex(CitySqliteHelper.COLUMN_NAME)));
 		
-		datetime.setText(cursor.getString(cursor.getColumnIndex(WeatherSqliteHelper.COLUMN_TIME)));
-		location.setText(cursor.getString(cursor.getColumnIndex(WeatherSqliteHelper.COLUMN_CITY)));	
-		temp.setText(cursor.getString(cursor.getColumnIndex(WeatherSqliteHelper.COLUMN_TEMP)));
 		return convertView;
 	}
 

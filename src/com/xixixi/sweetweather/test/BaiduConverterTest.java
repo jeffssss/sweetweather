@@ -34,10 +34,14 @@ public class BaiduConverterTest {
 			e.printStackTrace();
 		}*/
 		
-		String json = "{\"weatherinfo\":{\"city\":\"西安\",\"cityid\":\"101110101\",\"temp\":\"18\",\"WD\":\"东北风\",\"WS\":\"2级\",\"SD\":\"68%\",\"WSE\":\"2\",\"time\":\"00:00\",\"isRadar\":\"1\",\"Radar\":\"JC_RADAR_AZ9290_JB\",\"njd\":\"10700\",\"qy\":\"973\"}}";
+/*		String json = "{\"weatherinfo\":{\"city\":\"西安\",\"cityid\":\"101110101\",\"temp\":\"18\",\"WD\":\"东北风\",\"WS\":\"2级\",\"SD\":\"68%\",\"WSE\":\"2\",\"time\":\"00:00\",\"isRadar\":\"1\",\"Radar\":\"JC_RADAR_AZ9290_JB\",\"njd\":\"10700\",\"qy\":\"973\"}}";
 		String result = new RealtimeWeatherConverter().RealtimeWeatherToJson(new RealtimeWeatherConverter().JsonToRealtimeWeather(json));
 		System.out.println(json);
-		System.out.println(result);
+		System.out.println(result);*/
+		String name = "2013-11-23 23:39";
+		int index = name.indexOf(".");
+		int total = name.length();
+		System.out.println(total + " "+ name.substring(11, total));
 	}
 
 }

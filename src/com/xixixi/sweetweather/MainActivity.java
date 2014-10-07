@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -12,15 +11,18 @@ import org.xixixi.sweetweather.entity.RealtimeWeather;
 import org.xixixi.sweetweather.entity.WeatherPredictions;
 
 import com.xixixi.sweetweather.adapter.WeatherPredictionAdapter;
+import com.xixixi.sweetweather.util.AlarmManagerUtil;
 import com.xixixi.sweetweather.util.BaiduWeatherToPredictionsConverter;
 import com.xixixi.sweetweather.util.CitySqliteHelper;
 import com.xixixi.sweetweather.util.RealtimeWeatherConverter;
 import com.xixixi.sweetweather.util.SharedPreferencesHelper;
+import com.xixixi.sweetweather.util.WeatherSqliteHelper;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,11 +50,14 @@ public class MainActivity extends Activity {
 	private TextView realtime_ws = null;
 	private TextView realtime_sd = null;
 	private TextView realtime_time = null;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		new AlarmManagerUtil(this).sendUpdateBroadcastRepeat(this);
 		
 		//绑定控件
 		local_name = (TextView)findViewById(R.id.location_name);
@@ -139,15 +144,40 @@ public class MainActivity extends Activity {
 			Intent intent = new Intent();
 			intent.setClass(MainActivity.this, HistoryActivity.class);
 			startActivity(intent);
-			
+			break;
+		}
+		case R.id.action_choose_city:{
+			Intent intent = new Intent();
+			intent.setClass(MainActivity.this, ChooseCityActivity.class);
+			startActivityForResult(intent, 1);
+			break;
+		}
+		case R.id.action_graphic:{
+			Intent intent = new Intent();
+			intent.setClass(MainActivity.this, TodayWeatherChartActivity.class);
+			startActivity(intent);
+			break;
 		}
 		default: return super.onOptionsItemSelected(item); 
 		}
-		
+		return super.onOptionsItemSelected(item); 
 		
 		
 	}
 	
+	
+	
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		SharedPreferencesHelper.writeLocationPreferences(data.getStringExtra("name"), data.getStringExtra("num"), this);
+		displayNameAndId();
+		displayWeather();
+	}
+
+
+
+
 	class HttpGetCityIdAsyncTask extends AsyncTask<Void, Integer, String> {
 		private final static String url = "http://61.4.185.48:81/g/";
 		private Context context; 
@@ -221,6 +251,7 @@ public class MainActivity extends Activity {
 			}
 
 			pd.dismiss();
+			displayWeather();
 		}
 
 
@@ -271,7 +302,7 @@ public class MainActivity extends Activity {
 			//String cityName = "武汉";
 			//Log.e("weather", "cityname = "+cityName);
 			if(cityName.contains(".")){
-				cityName=cityName.split(".")[1];
+				cityName=cityName.substring(cityName.indexOf(".")+1, cityName.length());
 			}
 			//Log.e("weather", "cityname = "+cityName);
 			try {
@@ -305,6 +336,7 @@ public class MainActivity extends Activity {
 	class HttpGetRealtimeWeatherAsyncTask extends AsyncTask<Void,Integer,String>{
 		private final static String url_1 = "http://www.weather.com.cn/data/sk/";
 		private final static String url_2 = ".html";
+		
 		private Context context; 
 		
 		public HttpGetRealtimeWeatherAsyncTask(Context context){
@@ -324,6 +356,11 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(String result) {
 			if(result!=null){
 				RealtimeWeather realtimeWeather = new RealtimeWeatherConverter().JsonToRealtimeWeather(result);
+				WeatherSqliteHelper sqlitehelper = WeatherSqliteHelper.getInstance(context);
+				sqlitehelper.open();
+				sqlitehelper.insertRealtimeWeather(realtimeWeather);
+				//Log.e("weather", "insert id = "+id);
+				sqlitehelper.close();
 				realtime_state.setVisibility(View.GONE);
 				realtime_sd.setText(realtimeWeather.getWeatherinfo().getSD());
 				realtime_temp.setText(realtimeWeather.getWeatherinfo().getTemp());

@@ -16,7 +16,8 @@ public class HistoryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
+		setContentView(R.layout.activity_history);
+		listview = (ListView)findViewById(R.id.history_listview);
 		bulidListView();
 		
 	}
@@ -29,8 +30,6 @@ public class HistoryActivity extends Activity {
 			Cursor cursor = sqlitehelper.findAll();
 			if(cursor.getCount()==0){
 				
-				listview.addView(LayoutInflater.from(HistoryActivity.this).
-						inflate(R.layout.history_list_head_none, null));
 			}
 			else{
 				HistoryAdapter adapter = new HistoryAdapter(HistoryActivity.this, cursor);
@@ -41,10 +40,12 @@ public class HistoryActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		finally{
-			sqlitehelper.close();
-		}
-		
+	}
+
+	@Override
+	protected void onDestroy() {
+		WeatherSqliteHelper.getInstance(HistoryActivity.this).close();
+		super.onDestroy();
 	}
 	
 	

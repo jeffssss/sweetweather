@@ -19,9 +19,9 @@ public class CitySqliteHelper {
 	//数据库、表、字段名
 	private static final String DB_NAME = "db_weather.db";  
 	private static final String TABLE_NAME="citys";
-	private static final String COLUMN_PROVINCE = "province_id";
-	private static final String COLUMN_NAME = "name";
-	private static final String COLUMN_CITY_NUM = "city_num";
+	public static final String COLUMN_PROVINCE = "province_id";
+	public static final String COLUMN_NAME = "name";
+	public static final String COLUMN_CITY_NUM = "city_num";
 	//版本号
 	private static final int DB_VERSION = 1; 
 	//路径
@@ -102,6 +102,12 @@ public class CitySqliteHelper {
     	//Log.e("sqliteheheheheh", "count = 0!!!!!!!!!!!");
     	return null;
     	
+    }
+    
+    public Cursor findAll(){
+    	Cursor cursor = mSQLiteDatabase.query(TABLE_NAME, null, null, null, null, null, " _id asc");
+    	cursor.moveToFirst();
+    	return cursor;
     }
     
     

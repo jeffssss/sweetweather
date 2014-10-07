@@ -26,6 +26,14 @@
         </activity>
         <activity 
             android:name=".HistoryActivity"></activity>
+       	<activity 
+            android:name=".ChooseCityActivity"></activity>
+       	<activity 
+       	    android:name=".GraphicActivity"></activity>
+       	<activity 
+       	    android:name=".TodayWeatherChartActivity"></activity>
+        <service 
+            android:name=".service.RealtimeWeatherService"></service>
     </application>
 
 </manifest>

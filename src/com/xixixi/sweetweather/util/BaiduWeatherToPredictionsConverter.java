@@ -18,6 +18,10 @@ public class BaiduWeatherToPredictionsConverter {
 		Gson gson = new Gson();
 		WeatherPredictions predictions = gson.fromJson(json, WeatherPredictions.class);
 		
+		//去掉第一条数据里实时天气的显示
+		String date = predictions.getResults().get(0).getWeather_data().get(0).getDate();
+		predictions.getResults().get(0).getWeather_data().get(0).setDate(date.substring(0, 2));
+		
 		return predictions;
 	}
 	
